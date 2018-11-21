@@ -1,19 +1,41 @@
-# Welcome!
-
-This C++ template lets you get started quickly with a simple one-page playground.
-
+#
 ```C++ runnable
 #include <iostream>
+#include <mutex>
 
-using namespace std;
+class MySingleton{
 
-int main() 
-{
-    cout << "Hello, World!";
-    return 0;
+  private:
+    static std::once_flag initInstanceFlag;
+    static MySingleton* instance;
+    MySingleton()= default;
+    ~MySingleton()= default;
+
+  public:
+    MySingleton(const MySingleton&)= delete;
+    MySingleton& operator=(const MySingleton&)= delete;
+
+    static MySingleton& getInstance(){
+      std::call_once(initInstanceFlag,MySingleton::initSingleton);
+      return *instance;
+    }
+
+    static void initSingleton(){
+      instance= new MySingleton();
+    }
+};
+
+MySingleton* MySingleton::instance= nullptr;
+std::once_flag MySingleton::initInstanceFlag;
+
+
+int main(){
+
+  std::cout << std::endl;
+
+  std::cout << "MySingleton::getInstance(): "<< &MySingleton::getInstance() << std::endl;
+  std::cout << "MySingleton::getInstance(): "<< &MySingleton::getInstance() << std::endl;
+
+  std::cout << std::endl;
+
 }
-```
-
-# Advanced usage
-
-If you want a more complex example (external libraries, viewers...), use the [Advanced C++ template](https://tech.io/select-repo/598)
